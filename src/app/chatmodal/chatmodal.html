@@ -1,0 +1,50 @@
+<div class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-headerchat">
+      <h2>AI Assistant</h2>
+      <button (click)="close()" class="close-button">×</button>
+    </div>
+
+    <div class="messages-container">
+      @for (msg of messages(); track $index) {
+      <div
+        [ngClass]="{
+          'message-user': msg.role === 'user',
+          'message-model': msg.role === 'model'
+        }"
+        class="message"
+      >
+        <div
+          class="message-bubble"
+          [innerHTML]="convertMarkdown(msg.html || msg.parts[0].text)"
+        ></div>
+      </div>
+      } @if (loading()) {
+      <div class="message message-model">
+        <div class="message-bubble typing-indicator"><span></span><span></span><span></span></div>
+      </div>
+      }
+
+      <div #messagesEnd></div>
+    </div>
+
+    <form class="input-area" (submit)="sendMessage($event)">
+      <div class="input-wrapper">
+        <textarea
+          placeholder="Type your message..."
+          [(ngModel)]="input"
+          name="input"
+          [rows]="1"
+          (keydown)="handleKeyDown($event)"
+        ></textarea>
+
+        <button type="submit" class="send-button">
+          <button></button>
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
+          </svg>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

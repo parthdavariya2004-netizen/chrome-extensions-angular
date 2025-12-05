@@ -1,17 +1,49 @@
-import { createApplication } from '@angular/platform-browser';
-import { ComponentRef } from '@angular/core';
-import { Ticketmodal } from './app/ticketmodal/ticketmodal';
+// Initialize on load
+window.addEventListener('load', async () => {
+  injectAppRoot();
+  injectScript();
+  injectStyles();
+  observeNavBar();
+});
 
+// Listen for messages from background script
 chrome.runtime.onMessage.addListener((msg: { action: string }) => {
   if (msg.action === 'open_modal') {
-    showModal();
+    window.dispatchEvent(new CustomEvent('ext-show-modal', { detail: { type: 'ticket' } }));
+  }
+  if (msg.action === 'open_chat') {
+    window.dispatchEvent(new CustomEvent('ext-show-modal', { detail: { type: 'chat' } }));
   }
 });
 
-//  Run observer on window load
-window.addEventListener('load', () => {
-  observeNavBar();
-});
+// Inject app-root container for Angular
+function injectAppRoot(): void {
+  const appRoot = document.createElement('div');
+  appRoot.id = 'ext-app-root';
+  document.body.appendChild(appRoot);
+
+  // // Load Angular main bundle
+  // const script = document.createElement('script');
+  // script.src = chrome.runtime.getURL('main.js');
+  // script.type = 'module';
+  // document.body.appendChild(script);
+}
+
+// Inject script
+function injectScript(): void {
+  const script = document.createElement('script');
+  script.src = chrome.runtime.getURL('main.js');
+  script.type = 'module';
+  document.body.appendChild(script);
+}
+
+// Inject styles
+function injectStyles(): void {
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = chrome.runtime.getURL('styles.css');
+  document.head.appendChild(link);
+}
 
 // Observe DOM changes and inject buttons
 function observeNavBar(): void {
@@ -20,7 +52,6 @@ function observeNavBar(): void {
       'button[data-testid="atlassian-navigation--create-button"]'
     );
 
-    // Insert only if Jira's Create button exists AND our extension buttons are not yet added
     if (createBtn && !document.getElementById('my-extension-btn')) {
       injectButtons(createBtn);
     }
@@ -32,9 +63,8 @@ function observeNavBar(): void {
   });
 }
 
-// Inject our extension buttons next to Jira's button
+// Inject extension buttons
 function injectButtons(createBtn: HTMLButtonElement): void {
-  // Add Ticket button
   const addBtn = document.createElement('button');
   addBtn.id = 'my-extension-btn';
   addBtn.textContent = 'Add ticket';
@@ -42,49 +72,18 @@ function injectButtons(createBtn: HTMLButtonElement): void {
   addBtn.style.marginLeft = '8px';
 
   createBtn.insertAdjacentElement('afterend', addBtn);
-  addBtn.addEventListener('click', () => showModal());
-
-  // Chat button
-  // const chatBtn = document.createElement('button');
-  // chatBtn.id = 'my-extension-chat-btn';
-  // chatBtn.textContent = 'Chat';
-  // chatBtn.className = createBtn.className;
-  // chatBtn.style.marginLeft = '8px';
-
-  // addBtn.insertAdjacentElement('afterend', chatBtn);
-  // chatBtn.addEventListener('click', () => chatModal());
-}
-
-// Angular dynamic modal loader
-let modalApp: any;
-let modalRef: ComponentRef<Ticketmodal> | null = null;
-
-async function showModal() {
-  // Avoid duplicates
-  if (document.getElementById('jira-ticket-modal-root')) return;
-
-  // Create container
-  const container = document.createElement('div');
-  container.id = 'jira-ticket-modal-root';
-  document.body.appendChild(container);
-
-  // Create Angular "application"
-  modalApp = await createApplication({
-    providers: [],
+  addBtn.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('ext-show-modal', { detail: { type: 'ticket' } }));
   });
 
-  // Bootstrap Angular component into container
-  modalRef = await modalApp.bootstrap(Ticketmodal, container);
+  const chatBtn = document.createElement('button');
+  chatBtn.id = 'my-extension-chat-btn';
+  chatBtn.textContent = 'Chat';
+  chatBtn.className = createBtn.className;
+  chatBtn.style.marginLeft = '8px';
 
-  // Handle close output
-  modalRef?.instance.closeModal.subscribe(() => {
-    closeModal(container);
+  addBtn.insertAdjacentElement('afterend', chatBtn);
+  chatBtn.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('ext-show-modal', { detail: { type: 'chat' } }));
   });
-}
-
-function closeModal(container: HTMLElement) {
-  if (modalRef) {
-    modalRef.destroy();
-  }
-  container.remove();
 }

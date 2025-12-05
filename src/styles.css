@@ -3,3 +3,11 @@ body {
   padding: 0;
   margin: 0;
 }
+
+.message-bubble pre,
+.message-bubble code {
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-wrap: wrap;
+}
