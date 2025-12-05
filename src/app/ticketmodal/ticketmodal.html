@@ -1,0 +1,58 @@
+<div class="ext-add-ticket-modal">
+  <form class="ext-add-ticket-form" #form="ngForm" (ngSubmit)="onSubmit(form)" novalidate>
+    <div class="ext-add-ticket-form-header">
+      <h2>Add Ticket</h2>
+      <span class="close-btn" (click)="close()"> × </span>
+    </div>
+
+    <div class="ext-add-ticket-form-body">
+      <!-- Title -->
+      <div class="form-group">
+        <div class="d-flex gap-3">
+          <input
+            placeholder="Enter ticket summary"
+            type="text"
+            name="title"
+            ngModel
+            required
+            #title="ngModel"
+          />
+
+          <button
+            type="button"
+            class="generate-btn"
+            [disabled]="loadingGenerate()"
+            (click)="onGenerateDescription(title, description)"
+          >
+            {{ loadingGenerate() ? 'Generating...' : 'Generate Description' }}
+          </button>
+        </div>
+
+        <div class="error" *ngIf="title.invalid && form.submitted">
+          <small>summary is required</small>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <textarea
+          placeholder="Enter ticket description"
+          name="description"
+          ngModel
+          required
+          #description="ngModel"
+          rows="5"
+        ></textarea>
+
+        <div class="error" *ngIf="description.invalid && form.submitted">
+          <small>description is required</small>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="submit-btn" [disabled]="loadingSubmit()">
+        {{ loadingSubmit() ? 'Submitting...' : 'Submit' }}
+      </button>
+    </div>
+  </form>
+</div>

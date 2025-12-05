@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "jira ticket ng",
+  "version": "1.0.0",
+  "description": "A simple chrome extension for jira ticket",
+  "permissions": ["tabs", "scripting", "activeTab"],
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["angular/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
