@@ -23,6 +23,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/options",
+                "output": "options"
               }
             ],
             "styles": ["src/styles.css"]

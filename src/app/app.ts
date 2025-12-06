@@ -16,11 +16,16 @@ type ModalType = 'ticket' | 'chat' | null;
 export class App implements OnInit, OnDestroy {
   protected readonly title = signal('jiraangular');
   activeModal = signal<ModalType>(null);
+  selectionText = signal('');
 
   private eventHandler = (e: Event) => {
     const customEvent = e as CustomEvent;
     const type = customEvent.detail?.type;
+
     if (type === 'ticket') {
+      const selectionText = customEvent.detail?.selectionText;
+      console.log('in app log', selectionText);
+      this.selectionText.set(selectionText || '');
       this.activeModal.set('ticket');
     } else if (type === 'chat') {
       this.activeModal.set('chat');

@@ -1,6 +1,6 @@
 <router-outlet></router-outlet>
 <div *ngIf="activeModal() === 'ticket'">
-  <app-ticketmodal (closeModal)="closeModal()" />
+  <app-ticketmodal (closeModal)="closeModal()" [selectionText]="selectionText()" />
 </div>
 
 <div *ngIf="activeModal() === 'chat'">

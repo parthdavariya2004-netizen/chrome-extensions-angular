@@ -7,9 +7,13 @@ window.addEventListener('load', async () => {
 });
 
 // Listen for messages from background script
-chrome.runtime.onMessage.addListener((msg: { action: string }) => {
+chrome.runtime.onMessage.addListener((msg: { action: string; selectionText: string }) => {
   if (msg.action === 'open_modal') {
-    window.dispatchEvent(new CustomEvent('ext-show-modal', { detail: { type: 'ticket' } }));
+    window.dispatchEvent(
+      new CustomEvent('ext-show-modal', {
+        detail: { type: 'ticket', selectionText: msg.selectionText },
+      })
+    );
   }
   if (msg.action === 'open_chat') {
     window.dispatchEvent(new CustomEvent('ext-show-modal', { detail: { type: 'chat' } }));
@@ -87,3 +91,58 @@ function injectButtons(createBtn: HTMLButtonElement): void {
     window.dispatchEvent(new CustomEvent('ext-show-modal', { detail: { type: 'chat' } }));
   });
 }
+
+// document.addEventListener('mouseup', () => {
+//   const text = window.getSelection()?.toString().trim();
+
+//   if (text) {
+//     showPopup(text);
+//   } else {
+//     removePopup();
+//   }
+// });
+
+// let popupEl: HTMLDivElement | null = null;
+
+// function showPopup(selectedText: string) {
+//   removePopup();
+
+//   const selection = window.getSelection();
+//   if (!selection?.rangeCount) return;
+
+//   const range = selection.getRangeAt(0);
+//   const rect = range.getBoundingClientRect();
+
+//   popupEl = document.createElement('div');
+//   popupEl.innerText = selectedText.toUpperCase();
+//   popupEl.style.position = 'fixed';
+//   popupEl.style.top = rect.bottom + 8 + 'px';
+//   popupEl.style.left = rect.left + 'px';
+//   popupEl.style.padding = '6px 10px';
+//   popupEl.style.background = '#0052cc';
+//   popupEl.style.color = '#fff';
+//   popupEl.style.borderRadius = '6px';
+//   popupEl.style.cursor = 'pointer';
+//   popupEl.style.zIndex = '999999';
+//   popupEl.style.fontSize = '13px';
+//   popupEl.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+
+//   popupEl.onclick = () => {
+//     removePopup();
+
+//     window.dispatchEvent(
+//       new CustomEvent('ext-show-modal', {
+//         detail: { type: 'ticket', text: selectedText },
+//       })
+//     );
+//   };
+
+//   document.body.appendChild(popupEl);
+// }
+
+// function removePopup() {
+//   if (popupEl) {
+//     popupEl.remove();
+//     popupEl = null;
+//   }
+// }

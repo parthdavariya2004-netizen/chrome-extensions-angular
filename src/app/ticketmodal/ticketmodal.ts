@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AIService } from '../services/gemini.service';
@@ -13,6 +13,11 @@ import { JiraService } from '../services/jira.service';
 })
 export class Ticketmodal {
   @Output() closeModal = new EventEmitter<void>();
+  @Input() selectionText: string = '';
+
+  ngOnChanges() {
+    console.log(this.selectionText);
+  }
 
   loadingGenerate = signal(false);
   loadingSubmit = signal(false);
